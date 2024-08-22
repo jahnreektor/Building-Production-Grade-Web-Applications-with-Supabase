@@ -28,9 +28,14 @@ export const Login = ({ formType = "pw-login", tenant, tenantName }) => {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {      
       if (event === "SIGNED_IN") {
-        router.push(getPath("/tickets"));
+        if (session.user.app_metadata.tenants?.includes(tenant)) {
+          router.push(getPath("/tickets"));
+        } else {
+          alert("You are not a member of this tenant");
+          supabase.auth.signOut();
+        }
       }
     });
 

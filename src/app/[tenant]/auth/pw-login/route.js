@@ -16,7 +16,8 @@ export async function POST(request, { params }) {
 
   const userData = data?.user;
 
-  if (error || !userData) {
+  if (error || !userData || !userData.app_metadata.tenants?.includes(params.tenant)) {
+    await supabase.auth.signOut();  
     return NextResponse.redirect(tenantUrl("/error?type=login-failed"), {
       status: 302,
     });
